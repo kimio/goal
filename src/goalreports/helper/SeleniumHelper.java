@@ -16,7 +16,6 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -74,7 +73,7 @@ public class SeleniumHelper {
     protected void callJs(String js){
         ((JavascriptExecutor) driver).executeScript(js);
     }
-    protected String captureScreen(final By locator) {
+    protected String captureScreen(By locator,String currentReport) {
         String path;
         try {
             WebElement ele = driver.findElement(locator);
@@ -96,7 +95,7 @@ public class SeleniumHelper {
                 eleWidth, eleHeight);
             ImageIO.write(eleScreenshot, "png", screenshot);
 
-            path = screenshot.getName();
+            path = currentReport+screenshot.getName();
             
             // Copy the element screenshot to disk
             FileUtils.copyFile(screenshot, new File(path));

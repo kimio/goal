@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -51,6 +50,15 @@ public class FXMLDocumentController implements Initializable {
         
         SeleniumHelper selenium = new SeleniumHelper(SeleniumHelper.Browser.Firefox);
         new Login(selenium.driver).logar(usuario.getText(), senha.getText());
+        
+        CapturarReport capturarReport = escolherReport(selenium);
+        capturarReport.entrarEmCPDelivered();
+        
+        capturarReport = escolherReport(selenium);
+        capturarReport.entrarEmProdutividadeBurnPotencial();
+        
+    }
+    private CapturarReport escolherReport(SeleniumHelper selenium){
         new EscolherReport(selenium.driver).escolherReport(frente.getText());
         CapturarReport capturarReport = new CapturarReport(selenium.driver);
 
@@ -60,19 +68,7 @@ public class FXMLDocumentController implements Initializable {
         config.nameSquad = time.getText();
         capturarReport.setConfigReport(config);
         
-        capturarReport.entrarEmCPDelivered();
-        /**
-         * Goes to Sauce Lab's guinea-pig page and prints title
-         */
-
-                
-//        WebElement button = driver.findElement(By.cssSelector("button[title='None selected']"));
-//        button.click();
-                
-//        WebElement element = driver.findElement(By.cssSelector("input[value='31881']"));
-//        element.click();
-
-        
+        return capturarReport;
     }
     private String getDate(DatePicker date){
         LocalDate localDate = date.getValue();
