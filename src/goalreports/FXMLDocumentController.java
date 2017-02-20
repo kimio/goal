@@ -56,6 +56,18 @@ public class FXMLDocumentController implements Initializable {
         
         capturarReport = escolherReport(selenium);
         capturarReport.entrarEmProdutividadeBurnPotencial();
+
+        capturarReport = escolherReport(selenium);
+        capturarReport.entrarEmPerformanceWorklog();
+        
+        capturarReport = escolherReport(selenium);
+        capturarReport.entrarEmQualityDEVPotencial();
+        
+        capturarReport = escolherReport(selenium);
+        capturarReport.entrarEmDefeitosPorFase();
+        
+        capturarReport = escolherReport(selenium);
+        capturarReport.entrarEmRetrabalho();
         
     }
     private CapturarReport escolherReport(SeleniumHelper selenium){

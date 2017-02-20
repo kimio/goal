@@ -6,7 +6,8 @@
 package goalreports.business;
 
 import goalreports.helper.SeleniumHelper;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -25,6 +26,11 @@ public class CapturarReport extends SeleniumHelper{
     private ReportConfig config;
     public CapturarReport(WebDriver driver) {
         super(driver);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(CapturarReport.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     private void clickOnReport(String reportName){
         String jsClickReport = "for(i = 1;i < $('h1').length;i++){" +
@@ -48,22 +54,82 @@ public class CapturarReport extends SeleniumHelper{
     public void setConfigReport(ReportConfig config){
         this.config = config;
     }
-    public void entrarEmCPDelivered() throws InterruptedException{
-        Thread.sleep(5000);
+    public void entrarEmCPDelivered(){
         currentReport = "CP Delivered";
         clickOnReport(currentReport);
         fluentWait(By.id("SprintFilter"));
         setDateFrom();
         setDateTo();
-        setNameSquad();  
+        setNameSquad(); 
+        fluentWait(By.className("google-visualization-table-table"));
         getImageReport();
     }
-    public void entrarEmProdutividadeBurnPotencial() throws InterruptedException{
-        Thread.sleep(5000);
+    public void entrarEmProdutividadeBurnPotencial(){
         currentReport = "Produtividade Burn - Potencial";
         clickOnReport(currentReport);
         fluentWait(By.id("selMoreFilters_chosen"));
+        callSprintFilter();
+        setDateFrom();
+        setDateTo();
+        setNameSquad();  
+        getImageReport();
+    }
+    public void entrarEmPerformanceWorklog(){
+        currentReport = "Performance Worklog";
+        clickOnReport(currentReport);
+        fluentWait(By.id("SprintFilter"));
+                
+        setDateFrom();
+        setDateTo();
+        setNameSquad();  
+        fluentWait(By.className("google-visualization-table-table"));
+        getImageReport();
+    }
+    public void entrarEmQualityDEVPotencial(){
+        currentReport = "Produtividade Burn - Potencial";
+        clickOnReport(currentReport);
+        currentReport = "Quality DEV Potential";
         
+        fluentWait(By.id("ctl00_cphContent_selReport"));
+        String jsChooseReport = "$('#ctl00_cphContent_selReport').val('190');" +
+"        $(GoalReports.DOM.ReportSel).trigger('chosen:updated');";
+        callJs(jsChooseReport);
+
+        String jsChooseGroupBy = "$('#ctl00_cphContent_ddlGroupBy').val('4');" +
+"        $(GoalReports.DOM.RangesDropdown).trigger('chosen:updated');";
+        callJs(jsChooseGroupBy);
+        
+        callSprintFilter();
+        setDateFrom();
+        setDateTo();
+        setNameSquad();  
+        getImageReport();
+    }
+    public void entrarEmDefeitosPorFase(){
+        currentReport = "Defeitos por Fase";
+        clickOnReport(currentReport);
+        callSprintFilter();
+                
+        setDateFrom();
+        setDateTo();
+        setNameSquad();  
+        fluentWait(By.className("google-visualization-table-table"));
+        getImageReport();
+    }
+    public void entrarEmRetrabalho(){
+        currentReport = "Retrabalho";
+        clickOnReport(currentReport);
+        callSprintFilter();
+                
+        setDateFrom();
+        setDateTo();
+        setNameSquad();  
+        fluentWait(By.className("google-visualization-table-table"));
+        getImageReport();
+    }
+    
+    
+    private void callSprintFilter(){
         String jsChooseSprintFilter = "$(\"#selMoreFilters\").val(\"23\");" +
 "        $(GoalReports.DOM.moreFiltersDropdown).trigger(\"chosen:updated\");" +
 "        Goal.sendRequest(GoalFilters.URI.GetFilters," +
@@ -77,31 +143,28 @@ public class CapturarReport extends SeleniumHelper{
         
         callJs(jsChooseSprintFilter);
         fluentWait(By.id("SprintFilter"));
-        setDateFrom();
-        setDateTo();
-        setNameSquad();  
-        getImageReport();
     }
-    
-            
     private void getImageReport(){
-        fluentWait(By.className("google-visualization-table-table"));
         callJs("GoalReports.btnGenerateClick();");
         waitForReportSquad();
     }
     private void waitForReportSquad(){
         fluentWait(By.className("google-visualization-table-table"));
         boolean isCurrentSquadReport = false;
-        List<WebElement> lista = driver.findElements(By.className("google-visualization-table-td"));
-        for(WebElement element : lista){
-            if(element.getText().toLowerCase().contains(config.nameSquad.toLowerCase())){
-                captureScreen(By.id("visualization"),currentReport);
-                isCurrentSquadReport = true;
-                break;
-            }
+        WebElement itemList = driver.findElements(By.className("google-visualization-table-td")).get(1);
+        if(itemList.getText().toLowerCase().contains(config.nameSquad.toLowerCase())){
+            fluentWait(By.id("visualization"));
+            captureScreen(By.id("visualization"),currentReport);
+            isCurrentSquadReport = true;
         }
         if(!isCurrentSquadReport){
            waitForReportSquad();
+        }else{
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(CapturarReport.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
