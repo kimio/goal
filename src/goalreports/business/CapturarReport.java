@@ -146,19 +146,24 @@ public class CapturarReport extends SeleniumHelper{
     }
     private void getImageReport(){
         callJs("GoalReports.btnGenerateClick();");
-        waitForReportSquad();
+        int numberColumnSquadName = (currentReport.equals("Retrabalho"))?2:1;
+        waitForReportSquad(numberColumnSquadName);
     }
-    private void waitForReportSquad(){
+    private void waitForReportSquad(int numberColumnSquadName){
         fluentWait(By.className("google-visualization-table-table"));
         boolean isCurrentSquadReport = false;
-        WebElement itemList = driver.findElements(By.className("google-visualization-table-td")).get(1);
-        if(itemList.getText().toLowerCase().contains(config.nameSquad.toLowerCase())){
-            fluentWait(By.id("visualization"));
-            captureScreen(By.id("visualization"),currentReport);
-            isCurrentSquadReport = true;
+        WebElement itemList = driver.findElements(By.className("google-visualization-table-td")).get(numberColumnSquadName);
+        try{
+            if(itemList.getText().toLowerCase().contains(config.nameSquad.toLowerCase())){
+                fluentWait(By.id("visualization"));
+                captureScreen(By.id("visualization"),currentReport);
+                isCurrentSquadReport = true;
+            }
+        }catch(Exception e){
+            System.out.println(e.getMessage());
         }
         if(!isCurrentSquadReport){
-           waitForReportSquad();
+           waitForReportSquad(numberColumnSquadName);
         }else{
             try {
                 Thread.sleep(5000);
