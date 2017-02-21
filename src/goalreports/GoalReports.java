@@ -16,6 +16,8 @@ import javafx.stage.Stage;
  * @author felipekimionishikaku
  */
 public class GoalReports extends Application {
+
+    public static Stage currentStage;
     
     @Override
     public void start(Stage stage) throws Exception {
@@ -25,6 +27,7 @@ public class GoalReports extends Application {
         
         stage.setScene(scene);
         stage.show();
+        currentStage = stage;
     }
 
     /**

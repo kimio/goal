@@ -9,20 +9,27 @@ import goalreports.business.CapturarReport;
 import goalreports.business.CapturarReport.ReportConfig;
 import goalreports.business.EscolherReport;
 import goalreports.business.Login;
+import goalreports.helper.GoogleSpreadSheetHelper;
 import goalreports.helper.SeleniumHelper;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+
 
 /**
  *
@@ -43,11 +50,20 @@ public class FXMLDocumentController implements Initializable {
     private DatePicker data_final;
     @FXML
     private TextField time;
+    @FXML
+    private TextField credencial_json;
+    @FXML
+    private TextField nome_aplicacao;
+    @FXML
+    private TextField id_situation_wall;
     
     
     @FXML
     private void handleButtonAction(ActionEvent event) throws InterruptedException {
-        
+        //getAllReports();
+        getGoogleSituationWall();
+    }
+    private void getAllReports(){
         SeleniumHelper selenium = new SeleniumHelper(SeleniumHelper.Browser.Firefox);
         new Login(selenium.driver).logar(usuario.getText(), senha.getText());
         
@@ -68,7 +84,16 @@ public class FXMLDocumentController implements Initializable {
         
         capturarReport = escolherReport(selenium);
         capturarReport.entrarEmRetrabalho();
+    }
+    private void getGoogleSituationWall(){
+        GoogleSpreadSheetHelper googleSpreadSheet = new GoogleSpreadSheetHelper(nome_aplicacao.getText(), credencial_json.getText());
         
+        List<List<Object>> spreadSheet;
+        try {
+            spreadSheet = googleSpreadSheet.getSpreadSheet(id_situation_wall.getText());
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     private CapturarReport escolherReport(SeleniumHelper selenium){
         new EscolherReport(selenium.driver).escolherReport(frente.getText());
@@ -92,5 +117,14 @@ public class FXMLDocumentController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }    
+    
+    @FXML
+    private void escolherCredencial(ActionEvent event) throws InterruptedException {
+        List<File> files = util.Util.openFileChooser(GoalReports.currentStage, "Selecione o Credencial.json", false);
+        files.forEach((file_import) -> {
+            credencial_json.setText(file_import.getAbsolutePath());
+        });
+    }
+    
     
 }
