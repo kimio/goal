@@ -9,9 +9,10 @@ import goalreports.business.CapturarReport;
 import goalreports.business.CapturarReport.ReportConfig;
 import goalreports.business.EscolherReport;
 import goalreports.business.Login;
-import goalreports.helper.GoogleSpreadSheetHelper;
+import goalreports.helper.GoogleApiHelper;
 import goalreports.helper.SeleniumHelper;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -60,8 +61,12 @@ public class FXMLDocumentController implements Initializable {
     
     @FXML
     private void handleButtonAction(ActionEvent event) throws InterruptedException {
-        //getAllReports();
-        getGoogleSituationWall();
+        try {
+            //getAllReports();
+            getGoogleSituationWall();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     private void getAllReports(){
         SeleniumHelper selenium = new SeleniumHelper(SeleniumHelper.Browser.Firefox);
@@ -85,12 +90,14 @@ public class FXMLDocumentController implements Initializable {
         capturarReport = escolherReport(selenium);
         capturarReport.entrarEmRetrabalho();
     }
-    private void getGoogleSituationWall(){
-        GoogleSpreadSheetHelper googleSpreadSheet = new GoogleSpreadSheetHelper(nome_aplicacao.getText(), credencial_json.getText());
-        
+    private void getGoogleSituationWall() throws FileNotFoundException{
+        GoogleApiHelper googleapi = new GoogleApiHelper(nome_aplicacao.getText(), credencial_json.getText());
+         File file = new File("apple.jpg");
+          
+        com.google.api.services.drive.model.File googlefile = googleapi.uploadDriveFile(file);
         List<List<Object>> spreadSheet;
         try {
-            spreadSheet = googleSpreadSheet.getSpreadSheet(id_situation_wall.getText());
+            spreadSheet = googleapi.getSpreadSheetValues(id_situation_wall.getText(),"A:Z");
         } catch (IOException ex) {
             Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
         }

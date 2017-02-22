@@ -6,28 +6,35 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.FileContent;
 import com.google.api.client.http.HttpTransport; 
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.*;
 import com.google.api.services.sheets.v4.Sheets;
+
 import java.io.FileInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author felipekn
  */
-public class GoogleSpreadSheetHelper {
+public class GoogleApiHelper {
     
     private String APPLICATION_NAME = null;
     private String CLIENT_SECRET_JSON = null;
@@ -37,14 +44,14 @@ public class GoogleSpreadSheetHelper {
      * @param applicationName Nome da aplicação
      * @param clientSecretJson Cliente Secret Json do Google SpreadSheet API
      */
-    public GoogleSpreadSheetHelper(String applicationName,String clientSecretJson){
+    public GoogleApiHelper(String applicationName,String clientSecretJson){
         APPLICATION_NAME = applicationName;
         CLIENT_SECRET_JSON = clientSecretJson;
     }
 
     /** Directory to store user credentials for this application. */
     private static final java.io.File DATA_STORE_DIR = new java.io.File(
-        System.getProperty("user.home"), ".credentials/sheets.googleapis.com-java");
+        System.getProperty("user.home"), ".credentials/2/drive-java-quickstart.json");
 
     /** Global instance of the {@link FileDataStoreFactory}. */
     private static FileDataStoreFactory DATA_STORE_FACTORY;
@@ -57,7 +64,7 @@ public class GoogleSpreadSheetHelper {
     private static HttpTransport HTTP_TRANSPORT;
 
     private static final List<String> SCOPES =
-        Arrays.asList(SheetsScopes.SPREADSHEETS_READONLY);
+        Arrays.asList(SheetsScopes.DRIVE);
 
     static {
         try {
@@ -87,7 +94,8 @@ public class GoogleSpreadSheetHelper {
                 .setDataStoreFactory(DATA_STORE_FACTORY)
                 .setAccessType("offline")
                 .build();
-        Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+        Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).
+                authorize("user");
         System.out.println(
                 "Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
         return credential;
@@ -107,20 +115,88 @@ public class GoogleSpreadSheetHelper {
         return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
                 .build();
+    }   
+    /**
+     * Build and return an authorized Drive client service.
+     * @return an authorized Drive client service
+     * @throws IOException
+     */
+    public Drive getDriveService() throws IOException {
+        Credential credential = authorize();
+        return new Drive.Builder(
+                HTTP_TRANSPORT, JSON_FACTORY, credential)
+                .setApplicationName(APPLICATION_NAME)
+                .build();
     }
-
-    public List<List<Object>> getSpreadSheet(String spreadsheetId) throws IOException {
+    
+    public File uploadDriveFile(java.io.File localFile){
+        File file = null;
+        try {
+            Drive service = getDriveService();
+            File fileMetadata = new File();
+            fileMetadata.setName(localFile.getName());
+            java.io.File filePath = new java.io.File(localFile.getAbsolutePath());
+            FileContent mediaContent = new FileContent("image/jpeg", filePath);
+            file = service.files().create(fileMetadata, mediaContent)
+                    .setFields("id")
+                    .execute();
+        } catch (IOException ex) {
+            Logger.getLogger(GoogleApiHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return file;
+    }
+    public List<File> getDriveListFiles(){
+        Drive service;
+        List<File> files = null;
+        try {
+            service = getDriveService();
+            FileList result = service.files().list()
+             .setFields("nextPageToken, files(id, name)").execute();
+            
+            files = result.getFiles();
+        } catch (IOException ex) {
+            Logger.getLogger(GoogleApiHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (files == null) {
+            System.out.println("No files found.");
+            return null;
+        }
+        return files;
+    }
+    public List<List<Object>> getSpreadSheetValues(String spreadsheetId,String range) throws IOException {
         Sheets service = getSheetsService();
-
-        String range = "A:Z";
         ValueRange response = service.spreadsheets().values()
             .get(spreadsheetId, range)
             .execute();
         List<List<Object>> values = response.getValues();
+                
         if (values == null || values.isEmpty()) {
             System.out.println("No data found.");
         }
         return values;
     }
-    
+    private void setSpreadSheetValue(String spreadsheetId,String cell,String value) throws IOException{
+        Sheets service = getSheetsService();
+        List<Object> data1 = new ArrayList<>();
+        data1.add(value);
+        
+        List<List<Object>> data = new ArrayList<>();
+        data.add(data1);
+        
+        ValueRange vr = new ValueRange().setValues(data);
+  
+        service.spreadsheets().values().
+                update(spreadsheetId, cell, vr).setValueInputOption("RAW").execute();
+    }
+    public void setSpreadSheetCellImage(String spreadsheetId,String cell,String imageUrl) throws IOException{
+        imageUrl = "=IMAGE(\""+imageUrl+"\")";
+        setSpreadSheetValue(spreadsheetId,cell,imageUrl);
+    }
+    public void setSpreadSheetCellValue(String spreadsheetId,String cell,String value) throws IOException{
+        setSpreadSheetValue(spreadsheetId,cell,value);
+    }
+
+    public File uploadDriveFile(File file) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

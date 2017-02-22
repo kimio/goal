@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="GoalReports.jar" size="19140" download="eager" />
+    <jar href="GoalReports.jar" size="24914" download="eager" />
     <jar href="lib/commons-logging-1.1.1.jar" size="60686" download="eager" />
     <jar href="lib/google-api-client-1.22.0.jar" size="199010" download="eager" />
     <jar href="lib/google-api-client-android-1.22.0.jar" size="10314" download="eager" />
@@ -17,6 +17,7 @@
     <jar href="lib/google-api-client-jackson2-1.22.0.jar" size="2694" download="eager" />
     <jar href="lib/google-api-client-java6-1.22.0.jar" size="2345" download="eager" />
     <jar href="lib/google-api-client-servlet-1.22.0.jar" size="6590" download="eager" />
+    <jar href="lib/google-api-services-drive-v3-rev59-1.22.0.jar" size="97653" download="eager" />
     <jar href="lib/google-api-services-sheets-v4-rev459-1.22.0.jar" size="155599" download="eager" />
     <jar href="lib/google-http-client-1.22.0.jar" size="356261" download="eager" />
     <jar href="lib/google-http-client-android-1.22.0.jar" size="12013" download="eager" />
