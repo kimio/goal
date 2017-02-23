@@ -5,6 +5,10 @@
  */
 package util;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -58,5 +63,30 @@ public class Util {
      */
     public static String readFile(File file){
         return readFile(file.getAbsolutePath());
+    }
+    public static void writeTextInImage(File imageFile,ImageText imageText) throws IOException{
+        BufferedImage image = ImageIO.read(imageFile);
+        Graphics g = image.getGraphics();
+        g.setFont(imageText.font);
+        g.setColor(imageText.color);
+        g.drawString(imageText.value, imageText.posX, imageText.posY);
+        g.dispose();
+
+        ImageIO.write(image, "png", imageFile);
+    
+    }
+    public static class ImageText {
+
+        public ImageText() {
+            font = new Font("Arial Black", Font.BOLD, 20);
+            posX = 0;
+            posY = 0;
+            color = Color.BLACK;
+        }
+        public static String value;
+        public static Font font;
+        public static int posX;
+        public static int posY;
+        public static Color color;
     }
 }

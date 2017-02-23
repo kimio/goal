@@ -9,6 +9,7 @@ import goalreports.business.CapturarReport;
 import goalreports.business.CapturarReport.ReportConfig;
 import goalreports.business.EscolherReport;
 import goalreports.business.Login;
+import goalreports.business.SituationWall;
 import goalreports.helper.GoogleApiHelper;
 import goalreports.helper.SeleniumHelper;
 import java.io.File;
@@ -60,12 +61,16 @@ public class FXMLDocumentController implements Initializable {
     private List<String> reports;
     @FXML
     private void handleButtonAction(ActionEvent event) throws InterruptedException {
+        //get all reports
         getAllReports();
-        try {
-            getGoogleSituationWall();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
-        };
+        
+        GoogleApiHelper googleapi = new GoogleApiHelper("Goal", credencial_json.getText());
+        SituationWall situationWall = new SituationWall(googleapi);
+        //upload reports to google drive account
+        situationWall.uploadReports(reports);
+        //update situation wall data
+        situationWall.setDataInSituationWall(id_situation_wall.getText());
+        
     }
     private void getAllReports(){
         SeleniumHelper selenium = new SeleniumHelper(SeleniumHelper.Browser.Firefox);
@@ -90,24 +95,7 @@ public class FXMLDocumentController implements Initializable {
         capturarReport = escolherReport(selenium);
         reports.add(capturarReport.entrarEmRetrabalho());
     }
-    private void getGoogleSituationWall() throws FileNotFoundException{
-        GoogleApiHelper googleapi = new GoogleApiHelper("Goal", credencial_json.getText());
-
-        for(String report : reports){
-            File file = new File(report);
-            com.google.api.services.drive.model.File googlefile = googleapi.uploadDriveFile(file);
-        }
-        
-        
-        /*
-        List<List<Object>> spreadSheet;
-        try {
-            spreadSheet = googleapi.getSpreadSheetValues(id_situation_wall.getText(),"A:Z");
-        } catch (IOException ex) {
-            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        */
-    }
+    
     private CapturarReport escolherReport(SeleniumHelper selenium){
         new EscolherReport(selenium.driver).escolherReport(frente.getText());
         CapturarReport capturarReport = new CapturarReport(selenium.driver);
@@ -119,10 +107,6 @@ public class FXMLDocumentController implements Initializable {
         capturarReport.setConfigReport(config);
         
         return capturarReport;
-    }
-    private void SetDataOnSituationWall(){
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        Date date = new Date();
     }
     private String getDate(DatePicker date){
         LocalDate localDate = date.getValue();

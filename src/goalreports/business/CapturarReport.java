@@ -1,16 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package goalreports.business;
 
 import goalreports.helper.SeleniumHelper;
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import util.Util;
 
 /**
  *
@@ -157,6 +154,13 @@ public class CapturarReport extends SeleniumHelper{
             if(itemList.getText().toLowerCase().contains(config.nameSquad.toLowerCase())){
                 fluentWait(By.id("visualization"));
                 report = captureScreen(By.id("visualization"),currentReport);
+                File file = new File(report);
+                Util.ImageText text = new Util.ImageText();
+                Util.ImageText.value = currentReport+" - "+config.nameSquad;
+                Util.ImageText.posX = 5;
+                Util.ImageText.posY = 25;
+                Util.writeTextInImage(file,text);
+                        
                 isCurrentSquadReport = true;
             }
         }catch(Exception e){

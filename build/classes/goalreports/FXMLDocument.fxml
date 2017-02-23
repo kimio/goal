@@ -19,7 +19,7 @@
                         <Text layoutX="14.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Usuário" />
                         <TextField fx:id="usuario" layoutX="14.0" layoutY="37.0" prefHeight="27.0" prefWidth="136.0" />
                         <Text layoutX="15.0" layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Senha" />
-                        <Text layoutX="170.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Frente de trabalho" />
+                        <Text layoutX="170.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Projeto" />
                         <PasswordField fx:id="senha" layoutX="15.0" layoutY="91.0" prefHeight="27.0" prefWidth="134.0" />
                         <TextField fx:id="frente" layoutX="170.0" layoutY="37.0" prefHeight="27.0" prefWidth="282.0" />
                         <DatePicker fx:id="data_inicial" layoutX="170.0" layoutY="91.0" />
