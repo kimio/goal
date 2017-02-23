@@ -13,12 +13,13 @@ import goalreports.helper.GoogleApiHelper;
 import goalreports.helper.SeleniumHelper;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -54,53 +55,58 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private TextField credencial_json;
     @FXML
-    private TextField nome_aplicacao;
-    @FXML
     private TextField id_situation_wall;
     
-    
+    private List<String> reports;
     @FXML
     private void handleButtonAction(ActionEvent event) throws InterruptedException {
+        getAllReports();
         try {
-            //getAllReports();
             getGoogleSituationWall();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        };
     }
     private void getAllReports(){
         SeleniumHelper selenium = new SeleniumHelper(SeleniumHelper.Browser.Firefox);
         new Login(selenium.driver).logar(usuario.getText(), senha.getText());
         
+        reports = new ArrayList<>();
         CapturarReport capturarReport = escolherReport(selenium);
-        capturarReport.entrarEmCPDelivered();
+        reports.add(capturarReport.entrarEmCPDelivered());
         
         capturarReport = escolherReport(selenium);
-        capturarReport.entrarEmProdutividadeBurnPotencial();
+        reports.add(capturarReport.entrarEmProdutividadeBurnPotencial());
 
         capturarReport = escolherReport(selenium);
-        capturarReport.entrarEmPerformanceWorklog();
+        reports.add(capturarReport.entrarEmPerformanceWorklog());
         
         capturarReport = escolherReport(selenium);
-        capturarReport.entrarEmQualityDEVPotencial();
+        reports.add(capturarReport.entrarEmQualityDEVPotencial());
         
         capturarReport = escolherReport(selenium);
-        capturarReport.entrarEmDefeitosPorFase();
+        reports.add(capturarReport.entrarEmDefeitosPorFase());
         
         capturarReport = escolherReport(selenium);
-        capturarReport.entrarEmRetrabalho();
+        reports.add(capturarReport.entrarEmRetrabalho());
     }
     private void getGoogleSituationWall() throws FileNotFoundException{
-        GoogleApiHelper googleapi = new GoogleApiHelper(nome_aplicacao.getText(), credencial_json.getText());
-         File file = new File("apple.jpg");
-          
-        com.google.api.services.drive.model.File googlefile = googleapi.uploadDriveFile(file);
+        GoogleApiHelper googleapi = new GoogleApiHelper("Goal", credencial_json.getText());
+
+        for(String report : reports){
+            File file = new File(report);
+            com.google.api.services.drive.model.File googlefile = googleapi.uploadDriveFile(file);
+        }
+        
+        
+        /*
         List<List<Object>> spreadSheet;
         try {
             spreadSheet = googleapi.getSpreadSheetValues(id_situation_wall.getText(),"A:Z");
         } catch (IOException ex) {
             Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        */
     }
     private CapturarReport escolherReport(SeleniumHelper selenium){
         new EscolherReport(selenium.driver).escolherReport(frente.getText());
@@ -113,6 +119,10 @@ public class FXMLDocumentController implements Initializable {
         capturarReport.setConfigReport(config);
         
         return capturarReport;
+    }
+    private void SetDataOnSituationWall(){
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = new Date();
     }
     private String getDate(DatePicker date){
         LocalDate localDate = date.getValue();

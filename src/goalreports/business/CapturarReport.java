@@ -54,7 +54,7 @@ public class CapturarReport extends SeleniumHelper{
     public void setConfigReport(ReportConfig config){
         this.config = config;
     }
-    public void entrarEmCPDelivered(){
+    public String entrarEmCPDelivered(){
         currentReport = "CP Delivered";
         clickOnReport(currentReport);
         fluentWait(By.id("SprintFilter"));
@@ -62,9 +62,9 @@ public class CapturarReport extends SeleniumHelper{
         setDateTo();
         setNameSquad(); 
         fluentWait(By.className("google-visualization-table-table"));
-        getImageReport();
+        return getImageReport();
     }
-    public void entrarEmProdutividadeBurnPotencial(){
+    public String entrarEmProdutividadeBurnPotencial(){
         currentReport = "Produtividade Burn - Potencial";
         clickOnReport(currentReport);
         fluentWait(By.id("selMoreFilters_chosen"));
@@ -72,9 +72,9 @@ public class CapturarReport extends SeleniumHelper{
         setDateFrom();
         setDateTo();
         setNameSquad();  
-        getImageReport();
+        return getImageReport();
     }
-    public void entrarEmPerformanceWorklog(){
+    public String entrarEmPerformanceWorklog(){
         currentReport = "Performance Worklog";
         clickOnReport(currentReport);
         fluentWait(By.id("SprintFilter"));
@@ -83,9 +83,9 @@ public class CapturarReport extends SeleniumHelper{
         setDateTo();
         setNameSquad();  
         fluentWait(By.className("google-visualization-table-table"));
-        getImageReport();
+        return getImageReport();
     }
-    public void entrarEmQualityDEVPotencial(){
+    public String entrarEmQualityDEVPotencial(){
         currentReport = "Produtividade Burn - Potencial";
         clickOnReport(currentReport);
         currentReport = "Quality DEV Potential";
@@ -103,9 +103,9 @@ public class CapturarReport extends SeleniumHelper{
         setDateFrom();
         setDateTo();
         setNameSquad();  
-        getImageReport();
+        return getImageReport();
     }
-    public void entrarEmDefeitosPorFase(){
+    public String entrarEmDefeitosPorFase(){
         currentReport = "Defeitos por Fase";
         clickOnReport(currentReport);
         callSprintFilter();
@@ -114,9 +114,9 @@ public class CapturarReport extends SeleniumHelper{
         setDateTo();
         setNameSquad();  
         fluentWait(By.className("google-visualization-table-table"));
-        getImageReport();
+        return getImageReport();
     }
-    public void entrarEmRetrabalho(){
+    public String entrarEmRetrabalho(){
         currentReport = "Retrabalho";
         clickOnReport(currentReport);
         callSprintFilter();
@@ -125,9 +125,8 @@ public class CapturarReport extends SeleniumHelper{
         setDateTo();
         setNameSquad();  
         fluentWait(By.className("google-visualization-table-table"));
-        getImageReport();
+        return getImageReport();
     }
-    
     
     private void callSprintFilter(){
         String jsChooseSprintFilter = "$(\"#selMoreFilters\").val(\"23\");" +
@@ -144,26 +143,27 @@ public class CapturarReport extends SeleniumHelper{
         callJs(jsChooseSprintFilter);
         fluentWait(By.id("SprintFilter"));
     }
-    private void getImageReport(){
+    private String getImageReport(){
         callJs("GoalReports.btnGenerateClick();");
         int numberColumnSquadName = (currentReport.equals("Retrabalho"))?2:1;
-        waitForReportSquad(numberColumnSquadName);
+        return waitForReportSquad(numberColumnSquadName);
     }
-    private void waitForReportSquad(int numberColumnSquadName){
+    private String waitForReportSquad(int numberColumnSquadName){
         fluentWait(By.className("google-visualization-table-table"));
         boolean isCurrentSquadReport = false;
+        String report = "";
         WebElement itemList = driver.findElements(By.className("google-visualization-table-td")).get(numberColumnSquadName);
         try{
             if(itemList.getText().toLowerCase().contains(config.nameSquad.toLowerCase())){
                 fluentWait(By.id("visualization"));
-                captureScreen(By.id("visualization"),currentReport);
+                report = captureScreen(By.id("visualization"),currentReport);
                 isCurrentSquadReport = true;
             }
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
         if(!isCurrentSquadReport){
-           waitForReportSquad(numberColumnSquadName);
+           report = waitForReportSquad(numberColumnSquadName);
         }else{
             try {
                 Thread.sleep(5000);
@@ -171,6 +171,7 @@ public class CapturarReport extends SeleniumHelper{
                 Logger.getLogger(CapturarReport.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        return report;
     }
     
 }
