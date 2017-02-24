@@ -78,7 +78,7 @@ public class Util {
     public static class ImageText {
 
         public ImageText() {
-            font = new Font("Arial Black", Font.BOLD, 20);
+            font = new Font("Arial Black", Font.PLAIN, 18);
             posX = 0;
             posY = 0;
             color = Color.BLACK;
