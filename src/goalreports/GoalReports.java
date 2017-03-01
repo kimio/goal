@@ -28,6 +28,7 @@ public class GoalReports extends Application {
         stage.setScene(scene);
         stage.show();
         currentStage = stage;
+        stage.setResizable(false);
     }
 
     /**

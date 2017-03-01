@@ -9,12 +9,15 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
@@ -64,6 +67,21 @@ public class Util {
     public static String readFile(File file){
         return readFile(file.getAbsolutePath());
     }
+    /***
+     * Escreve algum conteudo no arquivo desejado
+     * @param fileAddress Endereço completo do arquivo
+     * @param content Conteúdo do Arquivo
+     * @return retorna true/false
+     */
+    public static boolean writeFile(String fileAddress,String content){
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileAddress))) {
+            bw.write(content);
+            return true;
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
     public static void writeTextInImage(File imageFile,ImageText imageText) throws IOException{
         BufferedImage image = ImageIO.read(imageFile);
         Graphics g = image.getGraphics();
@@ -88,5 +106,12 @@ public class Util {
         public static int posX;
         public static int posY;
         public static Color color;
+    }
+    public static void showAlertInformation(String title,String subtitle,String content){
+        Alert dialogoInfo = new Alert(Alert.AlertType.INFORMATION);
+        dialogoInfo.setTitle(title);
+        dialogoInfo.setHeaderText(subtitle);
+        dialogoInfo.setContentText(content);
+        dialogoInfo.showAndWait();
     }
 }

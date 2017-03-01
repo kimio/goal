@@ -5,6 +5,7 @@
  */
 package goalreports;
 
+import com.google.gson.Gson;
 import goalreports.business.CapturarReport;
 import goalreports.business.CapturarReport.ReportConfig;
 import goalreports.business.EscolherReport;
@@ -12,6 +13,7 @@ import goalreports.business.Login;
 import goalreports.business.SituationWall;
 import goalreports.helper.GoogleApiHelper;
 import goalreports.helper.SeleniumHelper;
+import goalreports.model.Config;
 import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -25,17 +27,18 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
+import org.seleniumhq.jetty9.http.HttpTester;
+import util.Util;
 
 /**
  *
  * @author felipekimionishikaku
  */
 public class FXMLDocumentController implements Initializable {
-    
     
     @FXML
     private TextField usuario;
@@ -55,21 +58,58 @@ public class FXMLDocumentController implements Initializable {
     private TextField id_situation_wall;
     
     private List<String> reports;
+    private Config configuration;
+    private final String fileConfig = "config/config.json";
+    
     @FXML
     private void handleButtonAction(ActionEvent event) throws InterruptedException {
-        //get all reports
-        getAllReports();
+        Thread thread = new Thread(){
+            @Override
+            public void run(){
+                //update configuration
+                updateConfiguration();
+
+                //get all reports
+                getAllReports();
+                
+                util.Util.showAlertInformation("Informação",
+                        "Reports",
+                        "Todos Reports capturados.");
+            
+                GoogleApiHelper googleapi = new GoogleApiHelper("Goal", credencial_json.getText());
+                SituationWall situationWall = new SituationWall(googleapi);
+                //upload reports to google drive account
+                if(situationWall.uploadReports(reports)!=null){
+                    util.Util.showAlertInformation("Informação",
+                            "Reports",
+                            "Todos Reports enviados para o Google Drive.");
+
+                }
+                //update situation wall data
+                if(situationWall.setDataInSituationWall(id_situation_wall.getText())){
+                    
+                    util.Util.showAlertInformation("Informação",
+                            "Reports",
+                            "Data do Situation Wall atualizada.");
+                }
+            }
+        };
+        thread.start();
+    }
+    private void updateConfiguration(){
         
-        GoogleApiHelper googleapi = new GoogleApiHelper("Goal", credencial_json.getText());
-        SituationWall situationWall = new SituationWall(googleapi);
-        //upload reports to google drive account
-        situationWall.uploadReports(reports);
-        //update situation wall data
-        situationWall.setDataInSituationWall(id_situation_wall.getText());
+        configuration.setCredencialJson(credencial_json.getText());
+        configuration.setIdSituationWall(id_situation_wall.getText());
+        configuration.setNomeTime(time.getText());
+        configuration.setProjeto(frente.getText());
+        configuration.setUsuario(usuario.getText());
         
+        Gson gson = new Gson();
+        String json = gson.toJson(configuration);
+        util.Util.writeFile(fileConfig, json);
     }
     private void getAllReports(){
-        SeleniumHelper selenium = new SeleniumHelper(SeleniumHelper.Browser.Firefox);
+        SeleniumHelper selenium = new SeleniumHelper(SeleniumHelper.Browser.Firefox,configuration.getPastaFirefoxInstalado());
         new Login(selenium.driver).logar(usuario.getText(), senha.getText());
         
         reports = new ArrayList<>();
@@ -112,9 +152,19 @@ public class FXMLDocumentController implements Initializable {
     }
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        getConfiguration();
     }    
-    
+    private void getConfiguration(){
+        String config = Util.readFile(fileConfig);
+        Gson gson = new Gson();
+        configuration = gson.fromJson(config, Config.class);
+        
+        credencial_json.setText(configuration.getCredencialJson());
+        id_situation_wall.setText(configuration.getIdSituationWall());
+        time.setText(configuration.getNomeTime());
+        frente.setText(configuration.getProjeto());
+        usuario.setText(configuration.getUsuario());
+    }
     @FXML
     private void escolherCredencial(ActionEvent event) throws InterruptedException {
         List<File> files = util.Util.openFileChooser(GoalReports.currentStage, "Selecione o Credencial.json", false);

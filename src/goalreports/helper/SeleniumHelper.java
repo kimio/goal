@@ -33,9 +33,9 @@ public class SeleniumHelper {
         }
     }
     public WebDriver driver;
-    public SeleniumHelper(Browser browser){
+    public SeleniumHelper(Browser browser,String pathFirefox){
         if(browser.toString().equals("Firefox")){
-            System.setProperty("webdriver.firefox.bin","/Applications/Firefox.app/Contents/MacOS/firefox-bin");
+            System.setProperty("webdriver.firefox.bin",pathFirefox);
             System.setProperty("webdriver.gecko.driver","geckodriver");
             driver = new FirefoxDriver();
         }

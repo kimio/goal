@@ -28,15 +28,17 @@ public class SituationWall {
         }
         return googleFiles;
     }
-    public void setDataInSituationWall(String idSpreadSheet){
+    public boolean setDataInSituationWall(String idSpreadSheet){
         
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Date date = new Date();
         
         try {
             googleapi.setSpreadSheetCellValue(idSpreadSheet, "M1", "Last Update:\n"+dateFormat.format(date));
+            return true;
         } catch (IOException ex) {
             Logger.getLogger(SituationWall.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
     }
 }

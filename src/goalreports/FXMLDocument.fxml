@@ -9,7 +9,7 @@
 
 <AnchorPane id="AnchorPane" prefHeight="394.0" prefWidth="655.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="goalreports.FXMLDocumentController">
     <children>
-      <TabPane prefHeight="394.0" prefWidth="807.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="394.0" prefWidth="807.0" scaleShape="false" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Goal Report">
             <content>
@@ -47,7 +47,10 @@
           </Tab>
           <Tab text="Sobre">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label alignment="TOP_LEFT" layoutX="14.0" layoutY="14.0" prefHeight="330.0" prefWidth="782.0" text="Goal Report&#10;Software open source - https://github.com/kimio/goal&#10;&#10;Requisitos para utilização:&#10;&#10;- Conta no sistema goal&#10;- Credencial Google Api - para envio dos dados ao Google Drive&#10;- Acesso ao Situation Wall de sua Squad &#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;&#10;Desenvolvido por&#10;Felipe Kimio Nishikaku" wrapText="true" />
+                     </children></AnchorPane>
             </content>
           </Tab>
         </tabs>

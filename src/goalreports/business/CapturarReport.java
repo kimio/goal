@@ -210,7 +210,7 @@ public class CapturarReport extends SeleniumHelper{
                 
                 isCurrentSquadReport = true;
             }
-        }catch(Exception e){
+        }catch(IOException e){
             System.out.println(e.getMessage());
         }
         if(!isCurrentSquadReport){
