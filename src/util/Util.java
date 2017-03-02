@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -101,17 +102,19 @@ public class Util {
             posY = 0;
             color = Color.BLACK;
         }
-        public static String value;
-        public static Font font;
-        public static int posX;
-        public static int posY;
-        public static Color color;
+        public String value;
+        public Font font;
+        public int posX;
+        public int posY;
+        public Color color;
     }
     public static void showAlertInformation(String title,String subtitle,String content){
-        Alert dialogoInfo = new Alert(Alert.AlertType.INFORMATION);
-        dialogoInfo.setTitle(title);
-        dialogoInfo.setHeaderText(subtitle);
-        dialogoInfo.setContentText(content);
-        dialogoInfo.showAndWait();
+        Platform.runLater(() -> {
+            Alert dialogoInfo = new Alert(Alert.AlertType.INFORMATION);
+            dialogoInfo.setTitle(title);
+            dialogoInfo.setHeaderText(subtitle);
+            dialogoInfo.setContentText(content);
+            dialogoInfo.showAndWait();
+        });
     }
 }

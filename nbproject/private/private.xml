@@ -3,7 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/felipekn/Documents/workspace/java/goal/src/goalreports/FXMLDocumentController.java</file>
+            <file>file:/Users/felipekn/goal/src/goalreports/FXMLDocumentController.java</file>
+            <file>file:/Users/felipekn/goal/src/util/Util.java</file>
+            <file>file:/Users/felipekn/goal/src/goalreports/business/CapturarReport.java</file>
+            <file>file:/Users/felipekn/goal/src/goalreports/GoalReports.java</file>
+            <file>file:/Users/felipekn/goal/src/goalreports/business/SituationWall.java</file>
+            <file>file:/Users/felipekn/goal/src/goalreports/helper/SeleniumHelper.java</file>
         </group>
     </open-files>
 </project-private>

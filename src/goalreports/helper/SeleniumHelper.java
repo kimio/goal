@@ -14,6 +14,7 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -53,13 +54,17 @@ public class SeleniumHelper {
         driver.findElement(By.id(id)).sendKeys(key);
     }
     protected WebElement fluentWait(final By locator) {
-        Wait<WebDriver> wait = new FluentWait<>(driver)
-                .withTimeout(180, TimeUnit.SECONDS)
-                .pollingEvery(3, TimeUnit.SECONDS)
-                .ignoring(NoSuchElementException.class);
+        WebElement foo = null;
+        try {
+            Wait<WebDriver> wait = new FluentWait<>(driver)
+                    .withTimeout(240, TimeUnit.SECONDS)
+                    .pollingEvery(3, TimeUnit.SECONDS)
+                    .ignoring(NoSuchElementException.class);
 
-        WebElement foo = wait.until((WebDriver driver1) -> driver1.findElement(locator));
-
+            foo = wait.until((WebDriver driver1) -> driver1.findElement(locator));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         return  foo;
     }
     
@@ -91,7 +96,7 @@ public class SeleniumHelper {
             int eleHeight = ele.getSize().getHeight();
 
             // Crop the entire page screenshot to get only element screenshot
-            BufferedImage eleScreenshot= fullImg.getSubimage(point.getX(), point.getY(),
+            BufferedImage eleScreenshot = fullImg.getSubimage(point.getX(), point.getY(),
                 eleWidth, eleHeight);
             ImageIO.write(eleScreenshot, "png", screenshot);
 
@@ -100,8 +105,8 @@ public class SeleniumHelper {
             // Copy the element screenshot to disk
             FileUtils.copyFile(screenshot, new File(path));
         }
-        catch(IOException e) {
-            path = "Failed to capture screenshot: " + e.getMessage();
+        catch(IOException | WebDriverException e) {
+            path = null;
         }
         return path;
     }

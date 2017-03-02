@@ -180,22 +180,31 @@ public class CapturarReport extends SeleniumHelper{
     private void updateReportImageWithTitleText(String report) throws IOException{
         File file = new File(report);
         Util.ImageText text = new Util.ImageText();
-        Util.ImageText.value = currentReport+" - "+config.nameSquad;
-        Util.ImageText.posX = 5;
-        Util.ImageText.posY = 25;
+        text.value = currentReport+" - "+config.nameSquad;
+        text.posX = 5;
+        text.posY = 25;
         Util.writeTextInImage(file,text);
     }
     private void updateReportImageWithSubTitleText(String report) throws IOException{
         File file = new File(report);
         Util.ImageText text = new Util.ImageText();
-        Util.ImageText.value = getReportLastInformation();
-        Util.ImageText.posX = 5;
-        Util.ImageText.posY = 47;
-        Util.ImageText.font = new Font("Arial Black", Font.PLAIN, 16);
+        text.value = getReportLastInformation();
+        text.posX = 5;
+        text.posY = 47;
+        text.font = new Font("Arial Black", Font.PLAIN, 16);
         Util.writeTextInImage(file,text);
     }
     private String waitForReportSquad(int numberColumnSquadName){
-        fluentWait(By.className("google-visualization-table-table"));
+        String jsErrorClickAgain = "if($('#errorText')){if($('#errorText').text().indexOf('wrong')>-1){GoalReports.btnGenerateClick();}}";
+        callJs(jsErrorClickAgain);
+        if(fluentWait(By.className("google-visualization-table-table"))==null){
+            return waitForReportSquad(numberColumnSquadName);
+        }
+        if(fluentWait(By.className("google-visualization-table-td"))==null){
+            return waitForReportSquad(numberColumnSquadName);
+        }else if(driver.findElements(By.className("google-visualization-table-td")).isEmpty()){
+            return waitForReportSquad(numberColumnSquadName);
+        }
         boolean isCurrentSquadReport = false;
         String report = "";
         WebElement itemList = driver.findElements(By.className("google-visualization-table-td")).get(numberColumnSquadName);
@@ -205,6 +214,9 @@ public class CapturarReport extends SeleniumHelper{
                 
                 //screen capture and insert a text
                 report = captureScreen(By.id("visualization"),currentReport);
+                if(report==null){
+                    return waitForReportSquad(numberColumnSquadName);
+                }
                 updateReportImageWithTitleText(report);
                 updateReportImageWithSubTitleText(report);
                 
