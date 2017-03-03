@@ -1,9 +1,12 @@
 package goalreports.helper;
 
+import goalreports.business.Login;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
@@ -39,6 +42,13 @@ public class SeleniumHelper {
             System.setProperty("webdriver.firefox.bin",pathFirefox);
             System.setProperty("webdriver.gecko.driver","geckodriver");
             driver = new FirefoxDriver();
+        }
+    }
+    public void sleep(int seconds){
+        try {
+            Thread.sleep(1000*seconds);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     public SeleniumHelper(WebDriver driver){

@@ -18,16 +18,23 @@ public class EscolherReport extends SeleniumHelper{
         fluentWait(By.id("ctl00_menup_reports"));
         openUrl("http://goal.cit.com.br/GoalReports.aspx?Mode=Cards");
         waitForPageLoad();
-        
-        String jsOpenReportMenu = "$('.multiselect.dropdown-toggle.btn.btn-link')[$('.multiselect.dropdown-toggle.btn.btn-link').length-1].click();";
-        String jsProjectReport = "for(i = 1;i < $('label[class=checkbox]').length;i++){"+
-           "if($('label[class=checkbox]')[i].innerText=='"+frente+"'){"+
-               "$('label[class=checkbox]')[i].click();"+
-               "break;"+ 
-           "}"+
-        "}";
-        callJs(jsOpenReportMenu);
-        callJs(jsProjectReport);
+        clicarNoProjeto(frente);
+    }
+    private void clicarNoProjeto(String frente){
+        if(fluentWait(By.className("dropdown-toggle"))==null){
+            clicarNoProjeto(frente);
+        }else{
+            String jsOpenReportMenu = "$('.multiselect.dropdown-toggle.btn.btn-link')[$('.multiselect.dropdown-toggle.btn.btn-link').length-1].click();";
+            String jsProjectReport = "for(i = 1;i < $('label[class=checkbox]').length;i++){"+
+               "if($('label[class=checkbox]')[i].innerText=='"+frente+"'){"+
+                   "$('label[class=checkbox]')[i].click();"+
+                   "break;"+ 
+               "}"+
+            "}";
+            callJs(jsOpenReportMenu);
+            sleep(3);
+            callJs(jsProjectReport);
+        }
     }
     
 }
