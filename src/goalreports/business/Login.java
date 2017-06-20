@@ -10,7 +10,7 @@ import org.openqa.selenium.WebDriver;
  * @author felipekimionishikaku
  */
 public class Login  extends SeleniumHelper{
-
+    
     public Login(WebDriver driver) {
         super(driver);
     }

@@ -74,10 +74,10 @@ public class SeleniumHelper {
         WebElement foo = null;
         try {
             Wait<WebDriver> wait = new FluentWait<>(driver)
-                    .withTimeout(240, TimeUnit.SECONDS)
-                    .pollingEvery(3, TimeUnit.SECONDS)
-                    .ignoring(NoSuchElementException.class);
-
+            .withTimeout(240, TimeUnit.SECONDS)
+            .pollingEvery(3, TimeUnit.SECONDS)
+            .ignoring(NoSuchElementException.class);
+            
             foo = wait.until((WebDriver driver1) -> driver1.findElement(locator));
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -99,24 +99,24 @@ public class SeleniumHelper {
         String path;
         try {
             WebElement ele = driver.findElement(locator);
-
+            
             // Get entire page screenshotpath = source.getName();
             File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
             
             BufferedImage  fullImg = ImageIO.read(screenshot);
-
+            
             // Get the location of element on the page
             Point point = ele.getLocation();
-
+            
             // Get width and height of the element
             int eleWidth = ele.getSize().getWidth();
             int eleHeight = ele.getSize().getHeight();
-
+            
             // Crop the entire page screenshot to get only element screenshot
             BufferedImage eleScreenshot = fullImg.getSubimage(point.getX(), point.getY(),
-                eleWidth, eleHeight);
+                                                              eleWidth, eleHeight);
             ImageIO.write(eleScreenshot, "png", screenshot);
-
+            
             path = currentReport+screenshot.getName();
             
             // Copy the element screenshot to disk

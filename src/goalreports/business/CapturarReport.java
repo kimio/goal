@@ -41,13 +41,17 @@ public class CapturarReport extends SeleniumHelper{
         }
     }
     private void clickOnReport(String reportName){
-        String jsClickReport = "for(i = 1;i < $('h1').length;i++){" +
-            "if($('h1')[i].innerText.trim()=='"+reportName+"'){"+
-               "$('h1')[i].click();"+
-               "break;"+ 
-           "}"+
-        "}";
-        callJs(jsClickReport);
+        if(fluentWait(By.id("cardsContainer"))==null){
+            clickOnReport(reportName);
+        }else{
+            String jsClickReport = "for(i = 1;i < $('h1').length;i++){" +
+                "if($('h1')[i].innerText.trim()=='"+reportName+"'){"+
+                   "$('h1')[i].click();"+
+                   "break;"+ 
+               "}"+
+            "}";
+            callJs(jsClickReport);
+        }
     }
     private void setDateFrom(){
         callJs("$(\"#date_from\").val('"+config.dateFrom+"');");
@@ -65,6 +69,7 @@ public class CapturarReport extends SeleniumHelper{
     public String entrarEmCPDelivered(){
         currentReport = CP_DELIVERED;
         clickOnReport(currentReport);
+        sleep(3);
         fluentWait(By.id("SprintFilter"));
         setDateFrom();
         setDateTo();
@@ -75,6 +80,7 @@ public class CapturarReport extends SeleniumHelper{
     public String entrarEmProdutividadeBurnPotencial(){
         currentReport = PRODUTIVIDADE_BURN_POTENCIAL;
         clickOnReport(currentReport);
+        sleep(3);
         fluentWait(By.id("selMoreFilters_chosen"));
         callSprintFilter();
         setDateFrom();
@@ -85,8 +91,8 @@ public class CapturarReport extends SeleniumHelper{
     public String entrarEmPerformanceWorklog(){
         currentReport = PERFOMANCE_WORKLOG;
         clickOnReport(currentReport);
+        sleep(3);
         fluentWait(By.id("SprintFilter"));
-                
         setDateFrom();
         setDateTo();
         setNameSquad();  
@@ -97,7 +103,7 @@ public class CapturarReport extends SeleniumHelper{
         currentReport = PRODUTIVIDADE_BURN_POTENCIAL;
         clickOnReport(currentReport);
         currentReport = QUALITY_DEV_POTENCIAL;
-        
+        sleep(3);
         fluentWait(By.id("ctl00_cphContent_selReport"));
         String jsChooseReport = "$('#ctl00_cphContent_selReport').val('190');" +
 "        $(GoalReports.DOM.ReportSel).trigger('chosen:updated');";
@@ -115,9 +121,9 @@ public class CapturarReport extends SeleniumHelper{
     }
     public String entrarEmDefeitosPorFase(){
         currentReport = DEFEITOS_POR_FASE;
+        sleep(5);
         clickOnReport(currentReport);
         callSprintFilter();
-                
         setDateFrom();
         setDateTo();
         setNameSquad();  
@@ -126,6 +132,7 @@ public class CapturarReport extends SeleniumHelper{
     }
     public String entrarEmRetrabalho(){
         currentReport = RETRABALHO;
+        sleep(5);
         clickOnReport(currentReport);
         callSprintFilter();
                 
@@ -195,44 +202,48 @@ public class CapturarReport extends SeleniumHelper{
         Util.writeTextInImage(file,text);
     }
     private String waitForReportSquad(int numberColumnSquadName){
-        String jsErrorClickAgain = "if($('#errorText')){if($('#errorText').text().indexOf('wrong')>-1){GoalReports.btnGenerateClick();}}";
-        callJs(jsErrorClickAgain);
-        if(fluentWait(By.className("google-visualization-table-table"))==null){
-            return waitForReportSquad(numberColumnSquadName);
-        }
-        if(fluentWait(By.className("google-visualization-table-td"))==null){
-            return waitForReportSquad(numberColumnSquadName);
-        }else if(driver.findElements(By.className("google-visualization-table-td")).isEmpty()){
-            return waitForReportSquad(numberColumnSquadName);
-        }
-        boolean isCurrentSquadReport = false;
         String report = "";
-        WebElement itemList = driver.findElements(By.className("google-visualization-table-td")).get(numberColumnSquadName);
         try{
-            if(itemList.getText().toLowerCase().contains(config.nameSquad.toLowerCase())){
-                fluentWait(By.id("visualization"));
-                
-                //screen capture and insert a text
-                report = captureScreen(By.id("visualization"),currentReport);
-                if(report==null){
-                    return waitForReportSquad(numberColumnSquadName);
+            String jsErrorClickAgain = "if($('#errorText')){if($('#errorText').text().indexOf('wrong')>-1){GoalReports.btnGenerateClick();}}";
+            callJs(jsErrorClickAgain);
+            if(fluentWait(By.className("google-visualization-table-table"))==null){
+                return waitForReportSquad(numberColumnSquadName);
+            }
+            if(fluentWait(By.className("google-visualization-table-td"))==null){
+                return waitForReportSquad(numberColumnSquadName);
+            }else if(driver.findElements(By.className("google-visualization-table-td")).isEmpty()){
+                return waitForReportSquad(numberColumnSquadName);
+            }
+            boolean isCurrentSquadReport = false;
+            WebElement itemList = driver.findElements(By.className("google-visualization-table-td")).get(numberColumnSquadName);
+            try{
+                if(itemList.getText().toLowerCase().contains(config.nameSquad.toLowerCase())){
+                    fluentWait(By.id("visualization"));
+
+                    //screen capture and insert a text
+                    report = captureScreen(By.id("visualization"),currentReport);
+                    if(report==null){
+                        return waitForReportSquad(numberColumnSquadName);
+                    }
+                    updateReportImageWithTitleText(report);
+                    updateReportImageWithSubTitleText(report);
+
+                    isCurrentSquadReport = true;
                 }
-                updateReportImageWithTitleText(report);
-                updateReportImageWithSubTitleText(report);
-                
-                isCurrentSquadReport = true;
+            }catch(IOException e){
+                System.out.println(e.getMessage());
             }
-        }catch(IOException e){
-            System.out.println(e.getMessage());
-        }
-        if(!isCurrentSquadReport){
-           report = waitForReportSquad(numberColumnSquadName);
-        }else{
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(CapturarReport.class.getName()).log(Level.SEVERE, null, ex);
+            if(!isCurrentSquadReport){
+               report = waitForReportSquad(numberColumnSquadName);
+            }else{
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(CapturarReport.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
+        }catch(Exception e){
+            report = waitForReportSquad(numberColumnSquadName);
         }
         return report;
     }
