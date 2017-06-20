@@ -1,6 +1,7 @@
 package goalreports.business;
 
 import goalreports.helper.SeleniumHelper;
+import java.awt.event.KeyEvent;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 
@@ -18,7 +19,7 @@ public class Login  extends SeleniumHelper{
         waitForPageLoad();
         setValueByIdElement("txt_login",user);
         setValueByIdElement("txt_pass",password);
-        setValueByIdElement("txt_pass",Keys.ENTER);
+        setValueByIdElement("txt_pass",KeyEvent.VK_ENTER);
         waitForPageLoad();
     }
     

@@ -1,14 +1,18 @@
 package goalreports.helper;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
@@ -48,10 +52,23 @@ public class SeleniumHelper {
         driver.get(url);
     }
     protected void setValueByIdElement(String id,String value){
-        driver.findElement(By.id(id)).sendKeys(value);
+        callJs("document.getElementById('"+id+"').value='"+value+"';");
     }
-    protected void setValueByIdElement(String id,Keys key){
-        driver.findElement(By.id(id)).sendKeys(key);
+    /**
+     * Focus and send int keyevent 
+     * @param id id from element id
+     * @param key keyevent
+     */
+    protected void setValueByIdElement(String id,int key){
+        Robot robot;
+        try {
+            callJs("document.getElementById('"+id+"').focus();");
+            robot = new Robot();
+            robot.keyPress(key);
+        } catch (AWTException ex) {
+            Logger.getLogger(SeleniumHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
     protected WebElement fluentWait(final By locator) {
         WebElement foo = null;
