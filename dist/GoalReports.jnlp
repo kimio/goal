@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="GoalReports.jar" size="28912" download="eager" />
+    <jar href="GoalReports.jar" size="29006" download="eager" />
     <jar href="lib/commons-logging-1.1.1.jar" size="60686" download="eager" />
     <jar href="lib/google-api-client-1.22.0.jar" size="199010" download="eager" />
     <jar href="lib/google-api-client-appengine-1.22.0.jar" size="9888" download="eager" />

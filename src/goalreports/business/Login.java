@@ -2,7 +2,6 @@ package goalreports.business;
 
 import goalreports.helper.SeleniumHelper;
 import java.awt.event.KeyEvent;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 
 /**

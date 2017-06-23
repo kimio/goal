@@ -2,7 +2,6 @@ package goalreports.helper;
 
 import java.awt.AWTException;
 import java.awt.Robot;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +44,15 @@ public class SeleniumHelper {
             driver = new FirefoxDriver();
         }
     }
+    
+    public void sleep(int seconds){
+        try {
+            Thread.sleep(1000*seconds);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SeleniumHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public SeleniumHelper(WebDriver driver){
         this.driver = driver;
     }
